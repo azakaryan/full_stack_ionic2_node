@@ -1,0 +1,34 @@
+MySQL 5.5 database added.  Please make note of these credentials:
+
+       Root User: adminQpePId1
+   Root Password: FsJ81pkKD8Td
+   Database Name: api
+
+Connection URL: mysql://$OPENSHIFT_MYSQL_DB_HOST:$OPENSHIFT_MYSQL_DB_PORT/
+
+You can manage your new MySQL database by also embedding phpmyadmin.
+The phpmyadmin username and password will be the same as the MySQL credentials above.
+
+
+
+
+port forwarding
+If have an Error then run -> gem uninstall net-ssh -> gem install net-ssh
+
+to forward the port run 
+rhc port-forward  -a api -l armen0089@gmail.com -p myPassword
+
+
+Mysql Port
+rhc ssh <app> 'echo $OPENSHIFT_MYSQL_DB_HOST:$OPENSHIFT_MYSQL_DB_PORT'
+
+127.9.21.130:3306
+
+
+/*LOGIN TO DIFFERENT ACCOUNT*/
+
+rhc setup -l email
+
+/*TO SEE LOGS*/
+
+rhc tail -a myapp
