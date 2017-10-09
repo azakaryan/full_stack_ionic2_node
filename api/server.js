@@ -1,25 +1,21 @@
 #!/bin/env node
- //  OpenShift sample Node application
-var express = require('express');
-var app = require('./app/routes/index');
-var fs = require('fs');
-var requestify = require('requestify');
-var request = require("request");
-var bodyParser = require('body-parser');
-var busboy = require('connect-busboy');
-var path = require('path');
-var fs = require('fs-extra');
 
+const express = require('express');
+const app = require('./app/routes/index');
+const requestify = require('requestify');
+const request = require("request");
+const bodyParser = require('body-parser');
+const busboy = require('connect-busboy');
+const path = require('path');
+const fs = require('fs-extra');
+const config = require('./app/config/config');
 
-var FILE_SIZE_LIMIT = 10 * 1024 * 1024;
+const FILE_SIZE_LIMIT = 10 * 1024 * 1024;
 /**
  *  Define the sample application.
  */
-var SampleApp = function() {
-
-    //  Scope.
+const SampleApp = function() {
     var self = this;
-
 
     /*  ================================================================  */
     /*  Helper functions.                                                 */
@@ -30,8 +26,8 @@ var SampleApp = function() {
      */
     self.setupVariables = function() {
         //  Set the environment variables we need.
-        self.ipaddress = process.env.OPENSHIFT_NODEJS_IP;
-        self.port = process.env.OPENSHIFT_NODEJS_PORT || 9500;
+        self.ipaddress = config.host || "0.0.0.0";
+        self.port = config.port || 3000;
 
         if (typeof self.ipaddress === "undefined") {
             //  Log errors on OpenShift but continue w/ 127.0.0.1 - this
@@ -39,30 +35,6 @@ var SampleApp = function() {
             console.warn('No OPENSHIFT_NODEJS_IP var, using 127.0.0.1');
             self.ipaddress = "127.0.0.1";
         };
-    };
-
-
-    /**
-     *  Populate the cache.
-     */
-    self.populateCache = function() {
-        if (typeof self.zcache === "undefined") {
-            self.zcache = {
-                'index.html': ''
-            };
-        }
-
-        //  Local cache for static content.
-        self.zcache['index.html'] = fs.readFileSync('./index.html');
-    };
-
-
-    /**
-     *  Retrieve entry (content) from cache.
-     *  @param {string} key  Key identifying content to retrieve from cache.
-     */
-    self.cache_get = function(key) {
-        return self.zcache[key];
     };
 
 
@@ -118,7 +90,6 @@ var SampleApp = function() {
 
         self.routes['/'] = function(req, res) {
             res.setHeader('Content-Type', 'text/html');
-            res.send(self.cache_get('index.html'));
         };
     };
 
@@ -161,7 +132,6 @@ var SampleApp = function() {
      */
     self.initialize = function() {
         self.setupVariables();
-        self.populateCache();
         self.setupTerminationHandlers();
 
         // Create the express server and routes.
